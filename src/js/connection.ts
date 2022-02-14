@@ -7,9 +7,7 @@ let instance = null;
 
 class Connection {
 	connected:boolean = false;
-	
 	el: any; 
-
 
 	constructor() {
 		this.mount();
@@ -22,6 +20,7 @@ class Connection {
 	}
 	_observe(callback, error) {
 		let has_called = false;
+		let has_errored = false;
 
 		const self = this;
 		const done = ()=>{
@@ -31,13 +30,21 @@ class Connection {
 		};
 		const req = ()=>{
 			self._connect((...args)=>{
-				if (has_called) {
+				if (has_errored) { 
+					// reload when reconnected
+					location.reload();
+					return;
+				}
+
+				if (has_called == false) {
 					callback.apply(null, args);
 					has_called = true;
 				}
 				self.connected = true;
 				done();
 			}, (err)=> {
+				has_errored = true;
+
 				if (error) error(err);
 				done();
 			});
@@ -105,7 +112,7 @@ class Connection {
 	showError() {
 		if (!this.el) return;
 
-		this.el.innerHTML = 'Connection failed. Please make sure your python server is runnning. You can start the server with <code>$ python app.py</code>.';
+		this.el.innerHTML = 'Connection failed. Make sure app.py server is runnning. <code>$ python app.py</code>.';
 		this.el.style.display = "block";		
 	}
 	hideError() {
@@ -117,7 +124,6 @@ class Connection {
 	static connect(callback, error=null) {
 		if (! instance) {
 			instance = new Connection();
-			instance.mount();
 			instance._observe(callback, error);
 		} else {
 			if (instance.connected) {
@@ -127,6 +133,12 @@ class Connection {
 			}
 		}
 		return instance;
+	}
+	static isConnected() {
+		if (! instance) {
+			return false;
+		}
+		return instance.connected;
 	}
 }
 

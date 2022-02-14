@@ -178,8 +178,19 @@ class Sources {
 		//this.scroll();
 	}
 	remove() {
+		if (! Connection.isConnected()) {
+			this.moveToDown();
+			return;
+		}
 		if (typeof this.items[this.current] !== "undefined") {
 			const current = this.items[this.current];
+
+			// already
+			if (current.removed) {
+				this.update();
+				this.moveToDown();
+				return;
+			}
 			current.done = false;
 			current.removed = true;
 
@@ -204,8 +215,20 @@ class Sources {
 		this.moveToDown();
 	}
 	approve() {
+		if (! Connection.isConnected()) {
+			this.moveToDown();
+			return;
+		}
 		if (typeof this.items[this.current] !== "undefined") {
 			const current = this.items[this.current];
+			
+			// already
+			if (current.done) {
+				this.update();
+				this.moveToDown();
+				return;
+			}
+
 			current.done = true;
 			current.removed = false;
 
