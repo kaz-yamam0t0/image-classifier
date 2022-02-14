@@ -1,10 +1,11 @@
 
 
+import { listen, debug, setStyle } from './util';
 import Preview from './preview';
 import Sources from './sources';
-import { listen, debug, setStyle } from './util';
+import Connection from './connection';
 
-// reset 
+// reset events
 const __return_false = ()=>false;
 listen("wheel", __return_false);
 //listen("click", __return_false);
@@ -12,12 +13,12 @@ listen("wheel", __return_false);
 //listen("mousemove", __return_false);
 //listen("mouseup", __return_false);
 
-// preview
-/*
-document.addEventListener("DOMContentLoaded", ()=>{
-	preview.init();
+// connect
+Connection.connect((res, data)=>{
+	if (res == false) return;
+
+	console.log(data);
 });
-*/
 
 let preview = null;
 
