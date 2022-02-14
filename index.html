@@ -8,17 +8,22 @@
 	<link rel="stylesheet" href="dist/style.css">
 </head>
 <body>
-<!--
-<div class="global-error">
-	Connection failed. Please make sure your python server is runnning. You can start the server with <code>$ python app.py</code>.
-</div>
--->
 
 <div class="app">
 	<div class="sources"></div>
 	<div class="preview"></div>
 </div>
-<script src="dist/main.js" type="text/javascript" defer></script>
+
+<script>
+(()=>{
+	const s = document.createElement("script");
+	s.src = "dist/main.js?"+(new Date()).getTime();
+	s.type = "text/javascript";
+	s.defer = true;
+	document.body.appendChild(s);
+})();
+</script>
+<!-- <script src="dist/main.js" type="text/javascript" defer></script> -->
 
 </body>
 </html>

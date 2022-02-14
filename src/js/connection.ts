@@ -20,7 +20,7 @@ class Connection {
 		this.el = createElement("div", {"class": "global-error"}, document.body);
 		this.el.style.display = "none";
 	}
-	_observe(callback) {
+	_observe(callback, error) {
 		let has_called = false;
 
 		const self = this;
@@ -30,23 +30,21 @@ class Connection {
 			}, CONNECTION_INTERVAL_T);
 		};
 		const req = ()=>{
-			self._connect((res, data)=>{
+			self._connect((...args)=>{
 				if (has_called) {
-					callback.call(null, res, data);
+					callback.apply(null, args);
 					has_called = true;
 				}
-				if (res) {
-					self.connected = true;
-					done();
-				} else {
-					self.connected = false;
-					done();
-				}
+				self.connected = true;
+				done();
+			}, (err)=> {
+				if (error) error(err);
+				done();
 			});
 		};
 		req();
 	}
-	_connect(callback) {
+	_connect(callback=null, error=null) {
 		if (this._isLocal()) {
 			location.href = `${CONNECTION_URL}/`;
 			return;
@@ -60,19 +58,28 @@ class Connection {
 
 		return this._request()
 			.then(response=>{
-				if (callback) callback(true, response.json());
+				if (callback) callback.call(null, this);
 			})
 			.catch((err)=>{
-				console.error(err);
+				// if (callback) callback.call(null, null, err);
+				if (error) error.call(null, err);
 
-				if (callback) callback(false, err);
+				self.connected = false;
 				self.showError();
 			});
 	}
-	_request(url:string="/status", method:string="GET") {
-		return fetch(this._path(url), {
-			method, 
-		});
+	_request(url:string="/status", method:string="GET", data:any=null) {
+		let o = { method }
+		if (method == "POST") {
+			o["headers"] = {
+				"Content-Type": "application/json",
+				// 'Content-Type': 'application/x-www-form-urlencoded',
+			}
+			o["body"] = JSON.stringify(data);
+		} 
+		console.log(url, o);
+		const p = fetch(this._path(url), o);
+		return p;
 	}
 	_path(url:string) {
 		if (url.indexOf("://") >= 0 || url.indexOf("//") === 0) {
@@ -107,11 +114,17 @@ class Connection {
 		this.el.style.display = "none";
 	}
 
-	static connect(callback) {
+	static connect(callback, error=null) {
 		if (! instance) {
 			instance = new Connection();
 			instance.mount();
-			instance._observe(callback);
+			instance._observe(callback, error);
+		} else {
+			if (instance.connected) {
+				if (callback) callback.call(null, instance);
+			} else {
+				instance._observe(callback, error);
+			}
 		}
 		return instance;
 	}

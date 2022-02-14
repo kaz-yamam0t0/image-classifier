@@ -16,8 +16,6 @@ listen("wheel", __return_false);
 // connect
 Connection.connect((res, data)=>{
 	if (res == false) return;
-
-	console.log(data);
 });
 
 let preview = null;

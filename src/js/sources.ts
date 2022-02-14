@@ -1,9 +1,12 @@
 import { listen, debug, setStyle, createElement, findByClass } from './util';
 import { DATA_DIR } from './config';
 
+import Connection from './connection';
+
 class Sources {
 	items: {
 		name: string, 
+		path_org: string,
 		path: string, 
 		tag: string,
 		done: boolean,
@@ -34,6 +37,7 @@ class Sources {
 			if (typeof item === "string") {
 				item = { 
 					name: item,  
+					path_org: `${DATA_DIR}/${item}`,
 					path: `${DATA_DIR}/${item}`,
 					tag: null,
 					done: false,
@@ -175,25 +179,54 @@ class Sources {
 	}
 	remove() {
 		if (typeof this.items[this.current] !== "undefined") {
-			this.items[this.current].done = false;
-			this.items[this.current].removed = true;
+			const current = this.items[this.current];
+			current.done = false;
+			current.removed = true;
 
 			if (this.onupdate) {
-				this.onupdate(this.items[this.current]);
+				this.onupdate(current);
 			}
+			Connection.connect((conn)=>{
+				conn._request("/update", "POST", {
+					"name": current.name,
+					"src" : current.path, 
+					"action" : "remove",
+				}).then(res=>{
+					res.json().then(data=>{
+						if (data.dst) {
+							current.path = data.dst;
+						}
+					});
+				});
+			});
 		}
 		this.update();
 		this.moveToDown();
 	}
 	approve() {
 		if (typeof this.items[this.current] !== "undefined") {
-			this.items[this.current].done = true;
-			this.items[this.current].removed = false;
+			const current = this.items[this.current];
+			current.done = true;
+			current.removed = false;
 
 			if (this.onupdate) {
-				this.onupdate(this.items[this.current]);
+				this.onupdate(current);
 			}
+			Connection.connect((conn)=>{
+				conn._request("/update", "POST", {
+					"name": current.name,
+					"src" : current.path, 
+					"action" : "ok",
+				}).then(res=>{
+					res.json().then(data=>{
+						if (data.dst) {
+							current.path = data.dst;
+						}
+					});
+				});
+			});
 		}
+
 		this.update();
 		this.moveToDown();
 	}
