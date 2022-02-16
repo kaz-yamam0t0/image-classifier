@@ -42,7 +42,7 @@ class Sources {
 		this.items = [];
 		this.ul.innerHTML = "";
 		this.current = 0;
-		
+
 		this.add(items);
 	}
 	add(items: any[]) {
@@ -110,10 +110,10 @@ class Sources {
 				$item.classList.remove("-active");
 			}
 
-			// click
-			//listen.call($li, "click", function(e) {
-			//	self.click(e);
-			//});
+			// click events
+		//	listen.call($li, "click", function(e) {
+		//		self.click(e);
+		//	});
 
 			// status
 			if (item.done) {
@@ -148,7 +148,7 @@ class Sources {
 		});
 		listen.call(this.ul, "click", function(e){
 			self.click(e);
-		})
+		});
 	}
 	keypress(e) {
 		const keycode = e.keyCode;
@@ -173,7 +173,9 @@ class Sources {
 		}
 	}
 	click(e) {
-		// console.log(e);
+		console.log(e);
+
+		/*
 		if (! e.path) {
 			return;
 		}
@@ -183,6 +185,25 @@ class Sources {
 			}
 			return (`${el_.nodeName}`.toLowerCase() == "li");
 		});
+		*/
+		let el = e.target;
+		let li = null;
+		let tmp = 0;
+		while (el && el.nodeType == Node.ELEMENT_NODE) {
+			if (tmp++ > 10) break;  // something is wrong.
+			
+			if (`${el.nodeName}`.toLowerCase() == "li") {
+				li = el;
+				break;
+			}
+
+			if (!el.parentNode) break;
+			el = el.parentNode;
+		}
+		if (! li) {
+			return;
+		}
+
 		if (li.classList.contains("-active")) {
 			return;
 		}
