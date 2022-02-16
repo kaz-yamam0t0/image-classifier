@@ -207,26 +207,35 @@ class Preview {
 		this.frameX = this.imageX;
 		this.frameY = this.imageY;
 		
-		// adjust 
-		// adjust ratio
-		if (this.options && this.options.image_size) {
-			let [_w_, _h_] = this.options.image_size;
-			if (_w_ > 0 && _h_ > 0) {
-				const r_ = _w_ / _h_;
-				let [w, h] = [this.frameWidth, this.frameHeight];
-				_w_ = h * r_;
-				_h_ = w / r_;
-				if (w > _w_) {
-					w = _w_;
-				} else if (h > _h_) {
-					h = _h_;
+		if (this.data && this.data.frame) {
+			// maintain frame size/position
+			this.frameWidth = this.data.frame.width;
+			this.frameHeight = this.data.frame.height;
+			this.frameX = this.imageX + this.data.frame.x;
+			this.frameY = this.imageY + this.data.frame.y;
+		} else {
+			// adjust 
+			// adjust ratio
+			if (this.options && this.options.image_size) {
+				let [_w_, _h_] = this.options.image_size;
+				if (_w_ > 0 && _h_ > 0) {
+					const r_ = _w_ / _h_;
+					let [w, h] = [this.frameWidth, this.frameHeight];
+					_w_ = h * r_;
+					_h_ = w / r_;
+					if (w > _w_) {
+						w = _w_;
+					} else if (h > _h_) {
+						h = _h_;
+					}
+					this.frameWidth = w;
+					this.frameHeight = h;
+					this.frameX = this.imageX + (this.image.width - w) / 2;
+					this.frameY = this.imageY + (this.image.width - h) / 2;
 				}
-				this.frameWidth = w;
-				this.frameHeight = h;
-				this.frameX = this.imageX + (this.image.width - w) / 2;
-				this.frameY = this.imageY + (this.image.width - h) / 2;
 			}
 		}
+
 		// save data
 		if (this.data) {
 			this.data.frame = {
