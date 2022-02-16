@@ -13,6 +13,8 @@ import http.server
 import socketserver
 from http import HTTPStatus
 
+from PIL import Image
+
 
 BASEDIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -39,9 +41,14 @@ if not os.path.isdir(result_dir):
 	exit(-1)
 
 
-if not (m := re.match(r'^(\d+)x(\d+)$', args.resize)):
-	print("--resize is invalid")
-image_size = (int(m.group(1)), int(m.group(2)))
+# if not (m := re.match(r'^(\d+)x(\d+)$', args.resize)):
+# 	print("--resize is invalid")
+# image_size = (int(m.group(1)), int(m.group(2)))
+
+image_size = None
+if m := re.match(r'^(\d+)x(\d+)$', args.resize):
+	image_size = (int(m.group(1)), int(m.group(2)))
+
 
 # https://github.com/python/cpython/blob/3.10/Lib/http/server.py#L628
 class AppServerHandler(http.server.SimpleHTTPRequestHandler):
@@ -171,9 +178,13 @@ class AppServerHandler(http.server.SimpleHTTPRequestHandler):
 
 			# rename
 			try:
-				dst, dst_full = self.rename(src, dst)
+				if frame := postdata.get("frame"):
+					dst, dst_full = self.rename(src, dst, resize=frame)
+				else:
+					dst, dst_full = self.rename(src, dst)
 			except Exception as e:
-				res["error"] = e.message
+				# res["error"] = e
+				raise e
 				break
 			
 			# response
@@ -185,10 +196,10 @@ class AppServerHandler(http.server.SimpleHTTPRequestHandler):
 		# res["result"] = "OK"
 		self.response_json(res)
 
-	def rename(self, src, dst):
-		return self.copy(src, dst, rename_flg=True)
+	def rename(self, src, dst, resize=None):
+		return self.copy(src, dst, rename_flg=True, resize=resize)
 	
-	def copy(self, src, dst, rename_flg=False):
+	def copy(self, src, dst, rename_flg=False, resize=None):
 		src_full = self.translate_path(src)
 		if not os.path.isfile(src_full):
 			raise Exception("%s is not file" % src)
@@ -206,7 +217,16 @@ class AppServerHandler(http.server.SimpleHTTPRequestHandler):
 		if not os.path.isdir(d):
 			os.makedirs(d)
 
-		if rename_flg:
+		if resize:
+			x = int(resize["x"])
+			y = int(resize["y"])
+			w = int(resize["width"])
+			h = int(resize["height"])
+			self.save_cropped_image(src_full, dst_full, x,y,w+x,h+y)
+
+			if rename_flg:
+				os.remove(src_full)
+		elif rename_flg:
 			os.rename(src_full, dst_full)
 		else:
 			shutil.copy(src_full, dst_full)
@@ -287,6 +307,16 @@ class AppServerHandler(http.server.SimpleHTTPRequestHandler):
 
 		super().log_request(code, size)
 
+	def save_cropped_image(self, src, dst, x1, y1, x2, y2):
+		global image_size
+
+		img = Image.open(src)
+		img = img.crop((x1, y1, x2, y2))
+
+		if image_size:
+			img = img.resize(image_size)
+
+		img.save(dst) # quelity
 
 socketserver.TCPServer.allow_reuse_address = True
 # with socketserver.TCPServer(("", args.port), AppServerHandler) as httpd:

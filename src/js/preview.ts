@@ -227,6 +227,15 @@ class Preview {
 				this.frameY = this.imageY + (this.image.width - h) / 2;
 			}
 		}
+		// save data
+		if (this.data) {
+			this.data.frame = {
+				x: this.frameX - this.imageX, 
+				y: this.frameY - this.imageY,
+				width: this.frameWidth, 
+				height: this.frameHeight,
+			};
+		}
 
 		// update 
 		this.update();
