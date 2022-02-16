@@ -1,6 +1,7 @@
 
 
-import { listen, debug, setStyle } from './util';
+import { listen, debug, setStyle, find, findByClass } from './util';
+//import Layout from './layout';
 import Preview from './preview';
 import Sources from './sources';
 import Connection from './connection';
@@ -12,6 +13,9 @@ listen("wheel", __return_false);
 //listen("mousedown", __return_false);
 //listen("mousemove", __return_false);
 //listen("mouseup", __return_false);
+
+//const layout = new Layout();
+//layout.observe();
 
 // connect
 Connection.connect((conn)=>{
@@ -26,7 +30,12 @@ Connection.connect((conn)=>{
 		// list
 		conn._get("/list",data=>{
 			let preview = null;
-	
+			
+			if (!data["sources"] || data["sources"].length <= 0) {
+				alert("No images found in `data` directory.");
+				data["sources"] = [];
+			}
+
 			const s = new Sources(data["sources"], options);
 			s.onchange = function(item) {
 				// remount preview
@@ -42,6 +51,35 @@ Connection.connect((conn)=>{
 				// item.done
 			};
 			s.mount();
+			
+
+			// reload
+			let reloading = false;
+			const reload = findByClass("reload");
+
+			if (reload) {
+				reload.addEventListener("click", ()=>{
+					reload.classList.add("-loading");
+					conn._get("/list",data=>{
+						reload.classList.remove("-loading");
+						
+						if (!data["sources"] || data["sources"].length <= 0) {
+							alert("No images found in `data` directory.");
+							return;
+						}	
+
+						if (preview) {
+							preview.free();
+							preview = null;
+						}
+						s.replace(data["sources"]);
+					});
+
+					try {
+						reload.blur();
+					} catch(ignore_) {}
+				});
+			}
 		});
 	});
 });

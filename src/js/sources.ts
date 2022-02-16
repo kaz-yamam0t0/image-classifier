@@ -38,6 +38,13 @@ class Sources {
 		this.items = [];
 		this.add(items);
 	}
+	replace(items: any[]) {
+		this.items = [];
+		this.ul.innerHTML = "";
+		this.current = 0;
+		
+		this.add(items);
+	}
 	add(items: any[]) {
 		const self = this;
 
@@ -61,6 +68,7 @@ class Sources {
 
 		if (this.mounted) {
 			this.update();
+			this.change();
 		}
 	}
 

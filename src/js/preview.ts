@@ -552,6 +552,7 @@ class Preview {
 	}
 
 	_debug() {
+		/*
 		debug(`
 			mode: ${this.mode}<br />
 			start: (${this.startX}, ${this.startY})<br />
@@ -560,6 +561,7 @@ class Preview {
 			frame: pos=(${this.frameX}, ${this.frameY}) size=(${this.frameWidth}, ${this.frameHeight})<br />
 			zoom: ${this.zoom}
 		`);
+		*/
 	}
 }
 export default Preview;
