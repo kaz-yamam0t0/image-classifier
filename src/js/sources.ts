@@ -11,8 +11,12 @@ class Sources {
 		path_org: string,
 		path: string, 
 		tag: string,
+
 		done: boolean,
 		removed: boolean,
+		changed: boolean,
+
+		b64: string, // cache base64 image data for reference after renaming images
 
 		$li: any, // <li>
 		$image: any, // <img>
@@ -44,8 +48,10 @@ class Sources {
 					path_org: `${DATA_DIR}/${item}`,
 					path: `${DATA_DIR}/${item}`,
 					tag: null,
+
 					done: false,
 					removed: false,
+					changed: false, 
 				};
 				item.$image = new Image();
 				item.$image.src = item.path;
@@ -169,6 +175,9 @@ class Sources {
 			}
 			return (`${el_.nodeName}`.toLowerCase() == "li");
 		});
+		if (li.classList.contains("-active")) {
+			return;
+		}
 		
 		const index = this.items.findIndex((item)=>{
 			return (item.$li == li);
@@ -196,6 +205,7 @@ class Sources {
 				return;
 			}
 			current.done = false;
+			current.changed = false;
 			current.removed = true;
 
 			if (this.onupdate) {
@@ -209,8 +219,8 @@ class Sources {
 					"frame" : current.frame || null,
 				}).then(res=>{
 					res.json().then(data=>{
-						if (data.dst) {
-							current.path = data.dst;
+						if (data.backup) {
+							current.path = data.backup;
 						}
 					});
 				});
@@ -224,17 +234,19 @@ class Sources {
 			this.moveToDown();
 			return;
 		}
+		console.log(this.items, this.current);
 		if (typeof this.items[this.current] !== "undefined") {
 			const current = this.items[this.current];
 			
 			// already
-			if (current.done) {
+			if (current.done && !current.changed) {
 				this.update();
 				this.moveToDown();
 				return;
 			}
 
 			current.done = true;
+			current.changed = false;
 			current.removed = false;
 
 			if (this.onupdate) {
@@ -248,8 +260,8 @@ class Sources {
 					"frame" : current.frame || null,
 				}).then(res=>{
 					res.json().then(data=>{
-						if (data.dst) {
-							current.path = data.dst;
+						if (data.backup) {
+							current.path = data.backup;
 						}
 					});
 				});

@@ -61,7 +61,7 @@ class Preview {
 	constructor(image_data, options=null) {
 		//this.sources = sources;
 		this.data = image_data;
-		this.imageUrl = image_data.path;
+		this.imageUrl = image_data.b64 || image_data.path;
 		this.options = options;
 		this.reset();
 	}
@@ -153,8 +153,22 @@ class Preview {
 			};
 		}
 	}
+	cacheBase64data() {
+		const canvas = document.createElement("canvas");
+		const context = canvas.getContext("2d");
+		canvas.width = this.image.width;
+		canvas.height = this.image.height;
+		
+		context.drawImage(this.image, 0,0);
+
+		this.data.b64 = canvas.toDataURL("image/png");
+	}
 	onload() {
 		const self = this;
+
+		if (this.data && !this.data.b64) {
+			this.cacheBase64data();
+		}
 
 		//this.bg = createElement("img", {
 		//	"src" : this.imageUrl,
@@ -442,6 +456,7 @@ class Preview {
 				width: this.frameWidth, 
 				height: this.frameHeight,
 			};
+			this.data.changed = true;
 		}
 	}
 	dragMousedown(e) {

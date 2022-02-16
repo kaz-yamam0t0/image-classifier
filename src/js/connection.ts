@@ -114,7 +114,7 @@ class Connection {
 		}
 		if (url[0] != "/") url = `/${url}`;
 
-		return CONNECTION_URL + url;
+		return CONNECTION_URL + url + '?' + (new Date()).getTime();
 	}	
 	_isLocal() {
 		if (! location || !location.protocol || location.protocol == "file:") {

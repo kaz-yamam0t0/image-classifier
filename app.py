@@ -144,10 +144,21 @@ class AppServerHandler(http.server.SimpleHTTPRequestHandler):
 			if not (src := postdata.get("src")):
 				src = "data/" + name
 
-			# src_full = self.translate_path(src)
-			# if not os.path.isfile(src_full):
-			# 	res["error"] = '`%s` not exists' % (src)
-			# 	break
+			# backup
+			restore_backup = False
+			backup = None
+			if re.match(r'/?results/backup/', src):
+				restore_backup = True
+				backup = src
+			elif re.match(r'/?data/', src):
+				name_ = re.sub(r'/?data/', '', src)
+				backup = os.path.join('results/backup', name_)
+				try:
+					self.copy(src, backup)
+				except Exception as e:
+					# res["error"] = e.message
+					# break
+					pass
 
 			# dst
 			dst_dir = None
@@ -159,29 +170,15 @@ class AppServerHandler(http.server.SimpleHTTPRequestHandler):
 				res["error"] = '`%s` is invalid action' % (action) 
 				break
 
-			# dst_dir_full = self.translate_path(dst_dir)
-			# if not os.path.isdir(dst_dir_full):
-			# 	os.makedirs(dst_dir_full)
-
 			dst = os.path.join(dst_dir, name)
-			
-			# backup
-			if re.match(r'/?data/', src):
-				name_ = re.sub(r'/?data/', '', src)
-				backup = os.path.join('results/backup', name_)
-				try:
-					self.copy(src, backup)
-				except Exception as e:
-					# res["error"] = e.message
-					# break
-					pass
 
 			# rename
 			try:
-				if frame := postdata.get("frame"):
-					dst, dst_full = self.rename(src, dst, resize=frame)
+				frame = postdata.get("frame")
+				if restore_backup:
+					dst, dst_full = self.copy(src, dst, resize=frame)
 				else:
-					dst, dst_full = self.rename(src, dst)
+					dst, dst_full = self.rename(src, dst, resize=frame)
 			except Exception as e:
 				# res["error"] = e
 				raise e
@@ -190,6 +187,7 @@ class AppServerHandler(http.server.SimpleHTTPRequestHandler):
 			# response
 			res["src"] = src
 			res["dst"] = dst
+			res["backup"] = backup
 			res["result"] = "OK"
 			break
 		
