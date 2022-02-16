@@ -57,10 +57,6 @@ class Connection {
 			return;
 		}
 
-		//if (this.connected) {
-		//	if (callback()) callback(true);
-		//	return;
-		//}
 		const self = this;
 
 		return this._request("/status")
@@ -84,7 +80,7 @@ class Connection {
 			}
 			o["body"] = JSON.stringify(data);
 		} 
-		console.log(url, o);
+		//console.log(url, o);
 		const p = fetch(this._path(url), o);
 		
 		if (complete) {

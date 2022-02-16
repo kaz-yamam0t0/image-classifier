@@ -311,28 +311,7 @@ class Preview {
 	// event
 	initEvents() {
 		const self = this;
-		/*
-		this.__mousedown = (e)=>{
-			self.mousedown(e);
-			return false;
-		};
-		this.__mousemove = (e)=>{
-			self.mousemove(e);
-			return false;
-		};
-		this.__mouseup = (e)=>{
-			self.mouseup(e);
-			return false;
-		};
 
-		//listen.call(this.frame, "mousedown", this.__mousedown);
-		//listen.call(this.frame, "mousemove", this.__mousemove);
-		//listen.call(this.frame, "mouseup", this.__mouseup);
-		
-		//listen.call(this.el, "mousedown", this.__mousedown);
-		//listen.call(this.el, "mousemove", this.__mousemove);
-		//listen.call(this.el, "mouseup", this.__mouseup);
-		*/
 		this.__mousedown = (e)=>{
 			self.dragMousedown(e);
 			//return false;
@@ -393,38 +372,6 @@ class Preview {
 		listen.call(this.el, "mouseup", this.__point_mouseup);
 		listen.call(this.el, "mouseleave", this.__point_mouseup);
 	}
-	/*
-	mousedown(e) {
-		this.mode = 1;
-		this.pageX = this.startX = e.pageX;
-		this.pageY = this.startY = e.pageY;
-		//[this._imageStartX, this._imageStartY] = [this.imageX, this.imageY];
-		[this._frameStartX, this._frameStartY] = [this.frameX, this.frameY];
-		this.update();
-		this._debug();
-	}
-	mousemove(e) {
-		if (this.mode != 1) return;
-
-		[this.pageX, this.pageY] = [e.pageX, e.pageY];
-		//this.imageX = this._imageStartX + (this.pageX - this.startX);
-		//this.imageY = this._imageStartY + (this.pageY - this.startY);
-		//this.frameX = this._frameStartX + (this.pageX - this.startX);
-		//this.frameY = this._frameStartY + (this.pageY - this.startY);
-		this.move(
-			this._frameStartX + (this.pageX - this.startX),
-			this._frameStartY + (this.pageY - this.startY),
-		);
-		this.update();
-		this._debug();
-	}
-	mouseup(e) {
-		this.mode = 0;
-		this.pageX = this.startX = 0;
-		this.pageY = this.startY = 0;
-		this._frameStartX = this._frameStartY = 0;
-	}
-	*/
 	move(x:number, y:number, x2:number=null, y2:number=null) {
 		if (x2 === null) x2 = x + this.frameWidth;
 		if (y2 === null) y2 = y + this.frameHeight;
@@ -460,7 +407,6 @@ class Preview {
 		}
 	}
 	dragMousedown(e) {
-		console.log("dragMousedown");
 		this.mode = 1;
 		this.pageX = this.startX = e.pageX;
 		this.pageY = this.startY = e.pageY;

@@ -234,7 +234,6 @@ class Sources {
 			this.moveToDown();
 			return;
 		}
-		console.log(this.items, this.current);
 		if (typeof this.items[this.current] !== "undefined") {
 			const current = this.items[this.current];
 			
