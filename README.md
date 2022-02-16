@@ -4,7 +4,7 @@
 
 ## Overview
 
-Classify and resize image files.
+Image Classifier is a simple local web application for classifing and resizing image files efficiently. It contains a standalone server written in python and runs in local environment.
 
 - Classify images efficiantly just by pressing ENTER and DELETE. 
 - Resize all images into the same size.
@@ -18,16 +18,16 @@ Classify and resize image files.
 ## Installation
 
 ```shell
+$ pip install Pillow
+
 $ git clone https://github.com/kaz-yamam0t0/image-classifier
 $ cd image-classifier/
-
-$ pip install Pillow
 ```
 
 ## Usage
 
 1. Put images into `data/` directory.
-1. Exec `python app.py`.
+1. Start the server by executing `python app.py`.
 1. Access to `http://localhost:8080/`
 1. Classify images with `ENTER` or `DELETE`.
 1. Converted images will be stored into `results/` directory.

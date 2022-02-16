@@ -298,7 +298,7 @@ class AppServerHandler(http.server.SimpleHTTPRequestHandler):
 		return self.directory, path
 
 	def log_request(self, code='-', size='-'):
-		# surpress
+		# suppress
 		if self.path.startswith("/status"):
 			return
 
