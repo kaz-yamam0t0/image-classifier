@@ -63,7 +63,7 @@ class Connection {
 		//}
 		const self = this;
 
-		return this._request()
+		return this._request("/status")
 			.then(response=>{
 				if (callback) callback.call(null, this);
 			})
@@ -75,7 +75,7 @@ class Connection {
 				self.showError();
 			});
 	}
-	_request(url:string="/status", method:string="GET", data:any=null) {
+	_request(url:string, method:string="GET", data:any=null, complete=null) {
 		let o = { method }
 		if (method == "POST") {
 			o["headers"] = {
@@ -86,8 +86,28 @@ class Connection {
 		} 
 		console.log(url, o);
 		const p = fetch(this._path(url), o);
+		
+		if (complete) {
+			p.then((res)=>{
+				res.json().then(data=>{
+					complete(data);
+					return data;
+				});
+				return res;
+			});
+		}
+		
+
 		return p;
 	}
+	_get(url:string, complete=null) {
+		return this._request(url, "GET", null, complete);
+	}
+	_post(url:string, data:any=null, complete=null) {
+		return this._request(url, "POST", data, complete);
+	}
+
+
 	_path(url:string) {
 		if (url.indexOf("://") >= 0 || url.indexOf("//") === 0) {
 			return url;

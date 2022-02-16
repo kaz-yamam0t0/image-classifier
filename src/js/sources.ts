@@ -4,6 +4,8 @@ import { DATA_DIR } from './config';
 import Connection from './connection';
 
 class Sources {
+	options = null;
+
 	items: {
 		name: string, 
 		path_org: string,
@@ -14,6 +16,7 @@ class Sources {
 
 		$li: any, // <li>
 		$image: any, // <img>
+		frame: null, // {x,y,width,height}
 	}[];
 
 	el = null; // div.sources
@@ -24,8 +27,9 @@ class Sources {
 	onchange = null;
 	onupdate = null;
 
-	constructor(items: any[]) {
+	constructor(items: any[], options=null) {
 		const self = this;
+		this.options = options;
 
 		this.items = [];
 		this.add(items);
@@ -202,6 +206,7 @@ class Sources {
 					"name": current.name,
 					"src" : current.path, 
 					"action" : "remove",
+					"frame" : current.frame || null,
 				}).then(res=>{
 					res.json().then(data=>{
 						if (data.dst) {
@@ -240,6 +245,7 @@ class Sources {
 					"name": current.name,
 					"src" : current.path, 
 					"action" : "ok",
+					"frame" : current.frame || null,
 				}).then(res=>{
 					res.json().then(data=>{
 						if (data.dst) {

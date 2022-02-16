@@ -17,24 +17,30 @@ listen("wheel", __return_false);
 Connection.connect((conn)=>{
 	if (! conn) return;
 
-	conn._request("/list").then((res)=>{
-		res.json().then(data=>{
-			let preview = null;
+	let options = null;
 
-			const s = new Sources(data["sources"]);
+	// config
+	conn._get("/config", data=>{
+		options = data.options;
+
+		// list
+		conn._get("/list",data=>{
+			let preview = null;
+	
+			const s = new Sources(data["sources"], options);
 			s.onchange = function(item) {
 				// remount preview
 				if (preview) {
 					preview.free();
 					preview = null;
 				}
-				preview = new Preview(item);
+				preview = new Preview(item, options);
 				preview.mount();
 			};
 			s.onupdate = function(item) {
 				// item.removed
 				// item.done
-			}
+			};
 			s.mount();
 		});
 	});
