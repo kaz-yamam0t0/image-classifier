@@ -15,7 +15,6 @@ from http import HTTPStatus
 
 from PIL import Image
 
-
 BASEDIR = os.path.dirname(os.path.abspath(__file__))
 
 # ============================================

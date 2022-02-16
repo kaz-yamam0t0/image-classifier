@@ -13,6 +13,16 @@ Classify and resize image files for machine learning.
 ## Requirement
 
 - Python3
+- Pillow
+
+## Installation
+
+```shell
+$ git clone https://github.com/kaz-yamam0t0/image-classifier
+$ cd image-classifier/
+
+$ pip install Pillow
+```
 
 ## Usage
 
@@ -24,12 +34,6 @@ Classify and resize image files for machine learning.
 	- `results/checked/` contains images with `ENTER`
 	- `results/trash/` contains images with `DELETE`
 	- `results/backup/` is a backup directory.
-
-```shell
-$ git clone https://github.com/kaz-yamam0t0/image-classifier
-$ cd image-classifier/
-$ python app.py
-```
 
 ### Arguments
 
