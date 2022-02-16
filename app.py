@@ -20,12 +20,12 @@ BASEDIR = os.path.dirname(os.path.abspath(__file__))
 
 # ============================================
 # argparse
-parser = argparse.ArgumentParser(description='Image classifier server')
+parser = argparse.ArgumentParser(description='Image Classification Server')
 # parser.add_argument('--port', type=int, default=8080)
-parser.add_argument('--data-dir', type=str, default='data')
-parser.add_argument('--result-dir', type=str, default='results')
-parser.add_argument('--resize', type=str, default='512x512')
-parser.add_argument('--no-enlarge', action='store_true')
+parser.add_argument('--data-dir', type=str, default='data', help='Source directory (default "data")')
+parser.add_argument('--result-dir', type=str, default='results', help='Result directory (default "results")')
+parser.add_argument('--resize', type=str, default='512x512', help='Image Size (default "512x512")')
+# parser.add_argument('--no-enlarge', action='store_true', help='')
 
 
 args = parser.parse_args()

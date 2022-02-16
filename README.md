@@ -23,8 +23,19 @@ $ python app.py
 ```
 
 - Put images into `data/` directory.
-- Classify images with `ENTER` key or `DELETE` key.
+- Classify images with `ENTER` for `results/checked/` or `DELETE` for `results/trash/`.
 - Converted images will be stored into `results/` directory.
+
+### Advanced Usage
+
+You can add some arguments:
+
+```shell
+$ python app.py \
+  --data-dir=./data/ \
+  --result-dir=./results/ \
+  --resize=512x512
+```
 
 ## Licence
 
