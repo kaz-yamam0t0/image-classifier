@@ -5,7 +5,7 @@ import commonjs     from '@rollup/plugin-commonjs'
 import babel        from 'rollup-plugin-babel';
 import {terser}     from 'rollup-plugin-terser';
 
-const is_develop = true;
+const is_develop = false;
 
 export default {
 	input: 'src/js/main.ts',
