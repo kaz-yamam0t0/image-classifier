@@ -1,4 +1,4 @@
-# image-classifier
+# Image Classifier
 
 ![Image Classifier](./capture.png)
 
@@ -10,7 +10,7 @@ Image Classifier is a simple local web application for efficiently classifying a
 - Resize all images into the same size.
 - Crop images if needed.
 
-## Requirement
+## Requirements
 
 - Python3
 - Pillow

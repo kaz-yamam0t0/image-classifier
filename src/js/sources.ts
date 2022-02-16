@@ -280,20 +280,23 @@ class Sources {
 			if (this.onupdate) {
 				this.onupdate(current);
 			}
-			Connection.connect((conn)=>{
-				conn._request("/update", "POST", {
-					"name": current.name,
-					"src" : current.path, 
-					"action" : "ok",
-					"frame" : current.frame || null,
-				}).then(res=>{
-					res.json().then(data=>{
-						if (data.backup) {
-							current.path = data.backup;
-						}
+			((current) => {
+				Connection.connect((conn)=>{
+					console.log(current.frame);
+					conn._request("/update", "POST", {
+						"name": current.name,
+						"src" : current.path, 
+						"action" : "ok",
+						"frame" : current.frame || null,
+					}).then(res=>{
+						res.json().then(data=>{
+							if (data.backup) {
+								current.path = data.backup;
+							}
+						});
 					});
 				});
-			});
+			})(current);
 		}
 
 		this.update();

@@ -18,6 +18,8 @@ class Preview {
 	imageY = 0;
 	imageWidth = 0;
 	imageHeight = 0;
+	imageOriginalWidth = 0;
+	imageOriginalHeight = 0;
 
 	// frame position
 	_frameStartX = 0;
@@ -208,8 +210,9 @@ class Preview {
 			w *= r; h *= r;
 		}
 		if (h > h0) {
-			r = Math.min(r, h0 / h);
-			w *= r; h *= r;
+			const r_ = h0 / h;
+			w *= r_; h *= r_;
+			r *= r_;
 		}
 
 		// initialize image size and position
@@ -219,6 +222,9 @@ class Preview {
 		this.imageX = (w0 - this.imageWidth) / 2;
 		this.imageY = (h0 - this.imageHeight) / 2;
 		
+		this.imageOriginalWidth = this.image.width;
+		this.imageOriginalHeight = this.image.height;
+
 		// calculate frame position
 		this.frameWidth = this.imageWidth; // * r;
 		this.frameHeight = this.imageHeight; // * r;
@@ -559,8 +565,9 @@ class Preview {
 	_debug() {
 		let s = [
 			`Radio: ${Math.floor(this.zoom * 100)}%`,
-			`Original: (${this.image.width}, ${this.image.height})`,
+			`Original: (${this.imageOriginalWidth}, ${this.imageOriginalHeight})`,
 			`Cropped: (${Math.floor(this.frameWidth / this.zoom)}, ${Math.floor(this.frameHeight / this.zoom)})`,
+			`(${Math.floor(this.frameX - this.imageX)}, ${Math.floor(this.frameY - this.imageY)}, ${Math.floor(this.frameWidth)}, ${Math.floor(this.frameHeight)})`,
 		];
 		if (this.options && this.options.image_size) {
 			const [w,h] = this.options.image_size;
