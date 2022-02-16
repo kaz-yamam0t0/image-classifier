@@ -2,9 +2,11 @@
 
 ![Image Classifier](./capture.png)
 
+## Overview
+
 Classify and resize image files for machine learning.
 
-- Efficiantly classify images by pressing just ENTER and DELETE. 
+- Efficiantly classify images just by pressing ENTER and DELETE. 
 - Resize all images into the same size.
 - Crop images if needed.
 
