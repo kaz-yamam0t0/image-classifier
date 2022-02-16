@@ -16,6 +16,8 @@ class Preview {
 	_imageStartY = 0;
 	imageX = 0;
 	imageY = 0;
+	imageWidth = 0;
+	imageHeight = 0;
 
 	// frame position
 	_frameStartX = 0;
@@ -69,8 +71,10 @@ class Preview {
 		this.mode = 0;
 		this.startX = this.startY = 0;
 		this.pageX = this.pageY = 0;
-		this.imageX = this.imageY = 0;
+
 		this._imageStartX = this._imageStartY = 0;
+		this.imageX = this.imageY = 0;
+		this.imageWidth = this.imageHeight = 0;
 
 		this._frameStartX = this._frameStartY = 0;
 		this._frameStartW = this._frameStartH = 0;
@@ -199,7 +203,6 @@ class Preview {
 		
 		let r = 1;
 		// zoom == 1
-		/*
 		if (w > w0) {
 			r = Math.min(r, w0 / w);
 			w *= r; h *= r;
@@ -208,25 +211,26 @@ class Preview {
 			r = Math.min(r, h0 / h);
 			w *= r; h *= r;
 		}
-		*/
 
 		// initialize image size and position
 		this.zoom = r;
-		this.imageX = (w0 - this.image.width * r) / 2;
-		this.imageY = (h0 - this.image.height * r) / 2;
+		this.imageWidth = w;
+		this.imageHeight = h;
+		this.imageX = (w0 - this.imageWidth) / 2;
+		this.imageY = (h0 - this.imageHeight) / 2;
 		
 		// calculate frame position
-		this.frameWidth = this.image.width; // * r;
-		this.frameHeight = this.image.height; // * r;
+		this.frameWidth = this.imageWidth; // * r;
+		this.frameHeight = this.imageHeight; // * r;
 		this.frameX = this.imageX;
 		this.frameY = this.imageY;
 		
 		if (this.data && this.data.frame) {
 			// maintain frame size/position
-			this.frameWidth = this.data.frame.width;
-			this.frameHeight = this.data.frame.height;
-			this.frameX = this.imageX + this.data.frame.x;
-			this.frameY = this.imageY + this.data.frame.y;
+			this.frameWidth = this.data.frame.width * this.zoom;
+			this.frameHeight = this.data.frame.height * this.zoom;
+			this.frameX = this.imageX + this.data.frame.x * this.zoom;
+			this.frameY = this.imageY + this.data.frame.y * this.zoom;
 		} else {
 			// adjust 
 			// adjust ratio
@@ -244,8 +248,8 @@ class Preview {
 					}
 					this.frameWidth = w;
 					this.frameHeight = h;
-					this.frameX = this.imageX + (this.image.width - w) / 2;
-					this.frameY = this.imageY + (this.image.width - h) / 2;
+					this.frameX = this.imageX + (this.imageWidth - w) / 2;
+					this.frameY = this.imageY + (this.imageHeight - h) / 2;
 				}
 			}
 		}
@@ -253,15 +257,16 @@ class Preview {
 		// save data
 		if (this.data) {
 			this.data.frame = {
-				x: this.frameX - this.imageX, 
-				y: this.frameY - this.imageY,
-				width: this.frameWidth, 
-				height: this.frameHeight,
+				x: (this.frameX - this.imageX) / this.zoom, 
+				y: (this.frameY - this.imageY) / this.zoom,
+				width: (this.frameWidth) / this.zoom, 
+				height: (this.frameHeight) / this.zoom,
 			};
 		}
 
 		// update 
 		this.update();
+		this._debug();
 
 		// init events
 		this.initEvents();
@@ -273,10 +278,10 @@ class Preview {
 				"top" : `${this.imageY}px`,
 				//"width" : `${this.image.width * this.zoom}px`,
 				//"height" : `${this.image.height * this.zoom}px`,
-				"width" : `${this.image.width}px`,
-				"height" : `${this.image.height}px`,
-				"transform" : `scale(${this.zoom})`,
-				"transform-origin" : "center center",
+				"width" : `${this.imageWidth}px`,
+				"height" : `${this.imageHeight}px`,
+				//"transform" : `scale(${this.zoom})`,
+				//"transform-origin" : "center center",
 			});
 		}
 		if (this.frame) {
@@ -287,8 +292,8 @@ class Preview {
 			//	"height" : `${this.frameHeight * this.zoom}px`,
 				"width" : `${this.frameWidth}px`,
 				"height" : `${this.frameHeight}px`,
-				"transform" : `scale(${this.zoom})`,
-				"transform-origin" : "center center",
+				//"transform" : `scale(${this.zoom})`,
+				//"transform-origin" : "center center",
 			});
 		}
 		if (this.bg && this.frame && this.frameImage) {
@@ -300,10 +305,10 @@ class Preview {
 				"top" : `${y}px`,
 			//	"width" : `${this.image.width * this.zoom}px`,
 			//	"height" : `${this.image.height * this.zoom}px`,
-				"width" : `${this.image.width}px`,
-				"height" : `${this.image.height}px`,
-				"transform" : `scale(${this.zoom})`,
-				"transform-origin" : "center center",
+				"width" : `${this.imageWidth}px`,
+				"height" : `${this.imageHeight}px`,
+				//"transform" : `scale(${this.zoom})`,
+				//"transform-origin" : "center center",
 			});
 		}
 	}
@@ -387,8 +392,8 @@ class Preview {
 		}
 		x = Math.max(x, this.imageX);
 		y = Math.max(y, this.imageY);
-		x2 = Math.min(x2, this.imageX + this.image.width);
-		y2 = Math.min(y2, this.imageY + this.image.height);
+		x2 = Math.min(x2, this.imageX + this.imageWidth);
+		y2 = Math.min(y2, this.imageY + this.imageHeight);
 
 		this.frameX = x;
 		this.frameY = y;
@@ -398,10 +403,10 @@ class Preview {
 
 		if (this.data) {
 			this.data.frame = {
-				x: x - this.imageX, 
-				y: y - this.imageY,
-				width: this.frameWidth, 
-				height: this.frameHeight,
+				x: (x - this.imageX) / this.zoom, 
+				y: (y - this.imageY) / this.zoom,
+				width: this.frameWidth / this.zoom, 
+				height: this.frameHeight / this.zoom,
 			};
 			this.data.changed = true;
 		}
@@ -430,12 +435,12 @@ class Preview {
 		if (x < this.imageX) { [x,x2] = [this.imageX,this.imageX+w]; }
 		if (y < this.imageY) { [y,y2] = [this.imageY,this.imageY+h]; }
 
-		if (this.imageX + this.image.width < x2) { 
-			x2 = this.imageX + this.image.width;
+		if (this.imageX + this.imageWidth < x2) { 
+			x2 = this.imageX + this.imageWidth;
 			x = x2 - w;
 		}
-		if (this.imageY + this.image.height < y2) {
-			y2 = this.imageY + this.image.height;
+		if (this.imageY + this.imageHeight < y2) {
+			y2 = this.imageY + this.imageHeight;
 			y = y2 - h;
 		}
 
@@ -506,10 +511,10 @@ class Preview {
 		if (x2 - x < 24) x2 = x + 24;
 		if (y2 - y < 24) y2 = y + 24;
 
-		x = Math.min(Math.max(x, this.imageX), this.imageX + this.image.width);
-		y = Math.min(Math.max(y, this.imageY), this.imageY + this.image.height);
-		x2 = Math.min(Math.max(x2, this.imageX), this.imageX + this.image.width);
-		y2 = Math.min(Math.max(y2, this.imageY), this.imageY + this.image.height);
+		x = Math.min(Math.max(x, this.imageX), this.imageX + this.imageWidth);
+		y = Math.min(Math.max(y, this.imageY), this.imageY + this.imageHeight);
+		x2 = Math.min(Math.max(x2, this.imageX), this.imageX + this.imageWidth);
+		y2 = Math.min(Math.max(y2, this.imageY), this.imageY + this.imageHeight);
 
 		// adjust ratio
 		if (this.options && this.options.image_size) {
@@ -552,6 +557,17 @@ class Preview {
 	}
 
 	_debug() {
+		let s = [
+			`Radio: ${Math.floor(this.zoom * 100)}%`,
+			`Original: (${this.image.width}, ${this.image.height})`,
+			`Cropped: (${Math.floor(this.frameWidth / this.zoom)}, ${Math.floor(this.frameHeight / this.zoom)})`,
+		];
+		if (this.options && this.options.image_size) {
+			const [w,h] = this.options.image_size;
+			s.push(`Resized: (${w}, ${h})`);
+		}
+
+		debug(s.join("<br />"));
 		/*
 		debug(`
 			mode: ${this.mode}<br />

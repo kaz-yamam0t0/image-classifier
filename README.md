@@ -4,7 +4,7 @@
 
 ## Overview
 
-Image Classifier is a simple local web application for classifing and resizing image files efficiently. It contains a standalone server written in python and runs in local environment.
+Image Classifier is a simple local web application for efficiently classifying and resizing image files. It contains a standalone web server written in python and runs in local environments.
 
 - Classify images efficiantly just by pressing ENTER and DELETE. 
 - Resize all images into the same size.
