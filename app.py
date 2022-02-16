@@ -97,7 +97,7 @@ class AppServerHandler(http.server.SimpleHTTPRequestHandler):
 				# "data_dir" : data_dir, 
 				# "result_dir" : result_dir, 
 				"image_size" : image_size, 
-				"enlargable" : (args.no_enlarge == False), 
+				# "enlargable" : (args.no_enlarge == False), 
 			},
 		})
 	

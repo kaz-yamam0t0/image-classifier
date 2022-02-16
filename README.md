@@ -4,9 +4,9 @@
 
 ## Overview
 
-Classify and resize image files for machine learning.
+Classify and resize image files.
 
-- Efficiantly classify images just by pressing ENTER and DELETE. 
+- Classify images efficiantly just by pressing ENTER and DELETE. 
 - Resize all images into the same size.
 - Crop images if needed.
 
